@@ -53,17 +53,17 @@ import (
 	db "github.com/hk1997/gosqldb"
 )
 
-var appDb db.SqlDatabase
+var AppDb db.SqlDatabase
 
 func InitDatabase(database db.SqlDatabase) {
-	appDb = database
+	AppDb = database
 }
 
 func InitPostgresDatabase(driver, connectorString string, maxRetries int) {
 	var boozingoDatabase db.SqlDatabase
-	appDb = &db.PostgresImpl{}
-	appDb.DbInit(driver, connectorString, maxRetries)
-	InitDatabase(appDb)
+	AppDb = &db.PostgresImpl{}
+	AppDb.DbInit(driver, connectorString, maxRetries)
+	InitDatabase(AppDb)
 }
 ```
 
@@ -105,7 +105,7 @@ func SendOtp(extension, mobile string) (bool, error) {
 	otp := generateOTP()
 	retries := 3
 
-	rows, err := appModule.appDb.RunQuery(INSERT_OTP_QUERY, extension, mobile, otp, retries)
+	rows, err := appModule.AppDb.RunQuery(INSERT_OTP_QUERY, extension, mobile, otp, retries)
 	if err != nil {
 		fmt.Println("Error running query", err)
 		return false, err
