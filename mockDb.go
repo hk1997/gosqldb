@@ -1,4 +1,4 @@
-package impl
+package gosqldb
 
 import "database/sql"
 
