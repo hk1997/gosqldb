@@ -2,6 +2,7 @@ package gosqldb
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/lib/pq"
 	"log"
 	"time"
@@ -47,4 +48,35 @@ func (postgres *PostgresImpl) RunQuery(query string, args ...interface{}) (*sql.
 		return nil, err
 	}
 	return rows, nil
+}
+
+func (postgres *PostgresImpl) RunTransaction(queries []Query) error {
+	log.Println("Running transaction")
+	tx, err := postgres.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	commitErr := func() error {
+		if err != nil {
+			log.Println("Transaction failed with error:", err)
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				return fmt.Errorf("transaction rollback error: %v\noriginal error: %v", rollbackErr, err)
+			}
+			return err
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			return fmt.Errorf("transaction commit error: %v", commitErr)
+		}
+		return nil
+	}
+
+	for _, q := range queries {
+		_, err = tx.Exec(q.QueryString, q.Args...)
+		if err != nil {
+			return commitErr()
+		}
+	}
+
+	return commitErr()
 }
