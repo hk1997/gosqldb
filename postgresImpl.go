@@ -80,3 +80,7 @@ func (postgres *PostgresImpl) RunTransaction(queries []Query) error {
 
 	return commitErr()
 }
+
+func (postgres *PostgresImpl) BeginTransaction() (*sql.Tx, error) {
+	return postgres.db.Begin()
+}

@@ -14,6 +14,8 @@ type SqlDatabase interface {
 
 	// RunTransaction Runs all the queries as a transaction
 	RunTransaction(queries []Query) error
+
+	BeginTransaction() (*sql.Tx, error)
 }
 
 type Query struct {

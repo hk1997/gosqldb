@@ -56,3 +56,7 @@ func (mdb *MockSqlDatabase) RunTransaction(queries []Query) error {
 
 	return commitErr()
 }
+
+func (mdb *MockSqlDatabase) BeginTransaction() (*sql.Tx, error) {
+	return mdb.Db.Begin()
+}
